@@ -12,7 +12,7 @@ import model.Card;
 import model.TienLenMienNam;
 
 public class Main extends Application {
-	private TienLenMienNam tienLenMienNam = new TienLenMienNam(2);
+	private TienLenMienNam tienLenMienNam = new TienLenMienNam(3);
 
 	@Override
 	public void start(Stage primaryStage) {

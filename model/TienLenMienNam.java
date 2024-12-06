@@ -143,9 +143,9 @@ public class TienLenMienNam {
 		}
 		// nếu round còn 2 người mà skip thì tạo round mà người tiếp theo sẽ mở bát
 		if (activePlayers == 2) {
+			nextPlayer();
 			newRound();
 			selectionCard.removeDeck();
-			nextPlayer();
 			return true;
 		}
 		// nếu không phải vòng đầu tiên thì có thể bỏ lượt
@@ -181,6 +181,7 @@ public class TienLenMienNam {
 			int b = lastPlay.size() - 1;
 			if (lastPlayType == PlayType.NULL) {// đã sửa ở đây
 				if (selectionCardType == PlayType.NULL) {
+					// System.out.println("Sai o day r!");
 					return false;
 				}
 				key = 0;
@@ -268,8 +269,9 @@ public class TienLenMienNam {
 			}
 		} else if (deck.size() == 0) {
 			return PlayType.NULL;
-		} else if (deck.size() % 2 == 0) {
-			// deck.sortDeck();
+		} else if (deck.size() % 2 == 0 && checkSanh(deck) != PlayType.SANH) {// da sua
+
+			// check doi thong nhung quen khong check sanh truoc->da sua
 			for (int i = 0; i < deck.size(); i = i + 2) {
 				if (!checkDoi(deck.getCard(i), deck.getCard(i + 1))) {
 					return PlayType.NULL;

@@ -6,10 +6,14 @@
 
 4, đã tối ưu được con Ba Bich
 
-5, nếu chỉ có 2-3 người chơi thì có trường hợp không xuất hiện 3 bích -> đã sửa để lúc này phải đánh seletionCard chứa lá bé nhất trong vòng chơi đầu tiên thay vì cần lá 3 bích...(do fix bug 2 chưa hết)
+5, nếu chỉ có 2-3 người chơi thì có trường hợp không xuất hiện 3 bích -> đã sửa để lúc này phải đánh seletionCard chứa lá bé nhất trong vòng chơi đầu tiên thay vì cần lá 3 bích...(do fix bug 2 chưa hết)-->đã fix
 
 6, nếu chọn bài rồi nhấn skip thì bị lỗi(new round)-->đã fix
 
 7, nếu mọi người skip hết, còn 1 người thì không thể đánh->đã fix
 
 8,lỗi selection card bị lẫn card của người chơi trước khi họ chọn card rồi skip-->đã fix
+
+9,lỗi skip thì bị nhầm lượt->đã fix
+
+10,lỗi sảnh 6/8/10 lá-> đã fix
