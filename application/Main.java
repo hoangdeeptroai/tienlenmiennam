@@ -107,25 +107,15 @@ public class Main extends Application {
 					Button restartButton = new Button("Restart");
 
 					restartButton.setOnAction(restartEvent -> {
-						// Gọi phương thức resetGame() của bạn để khởi động lại trò chơi
 						tienLenMienNam.resetGame(); // Khởi động lại trò chơi
 						statusLabel1.setText("Trò chơi đã được khởi động lại!");
 						statusLabel2.setText("Trên bàn đang có");
-
-						// Tạo lại giao diện trò chơi chính
-						updateCardPane.run(); // Cập nhật lại giao diện bài và thông tin người chơi
-
-						// Chuyển lại Scene về trạng thái ban đầu (Scene chứa bài)
+						updateCardPane.run();
 						primaryStage.setScene(scene);
 					});
-
-					// Thêm Label và nút Restart vào layout của Scene mới
 					endGameLayout.getChildren().addAll(winnerLabel, endGameLabel, restartButton);
-
-					// Tạo Scene mới cho phần kết thúc trò chơi và gán nó vào primaryStage
-					Scene endGameScene = new Scene(endGameLayout, 500, 300); // Cỡ Scene có thể tùy chỉnh
-
-					primaryStage.setScene(endGameScene); // Chuyển sang Scene mới
+					Scene endGameScene = new Scene(endGameLayout, 500, 300);
+					primaryStage.setScene(endGameScene);
 				}
 
 				// Hiển thị text của các lá bài đã chọn

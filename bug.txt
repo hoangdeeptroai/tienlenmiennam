@@ -17,3 +17,5 @@
 9,lỗi skip thì bị nhầm lượt->đã fix
 
 10,lỗi sảnh 6/8/10 lá-> đã fix
+
+11, đã thêm phần end, restart, rank;
