@@ -21,8 +21,8 @@ public class TienLenMienNam {
 	// Khai báo và khai báo
 	private List<Player> player;
 	private Deck motherPack;
-	private int numOfPlayer;
-	private int numOfAIPlayer;
+	public int numOfPlayer;
+	public int numOfAIPlayer;
 	private Deck lastPlay;
 	private Deck selectionCard;
 	private int round;
@@ -30,13 +30,16 @@ public class TienLenMienNam {
 	private Card minCard = new Card();// đã thêm-là lá bài bé nhất, 4 players -> là 3 bích
 	private int key = 1;// đã thêm-biến key thể hiện được ván bài đầu tiên, điều này giúp cho logic của
 						// lần đánh đầu tiên hoạt động tốt hơn...
+	public List<Integer> rank;// thêm danh sách chiến thắng
 
 	// constructer
 	// Khi khởi tạo constructer ta đồng thời khởi tạo một bộ bài tây 52 lá
-	public TienLenMienNam(int numOfPlayer) {
+	public TienLenMienNam(int numOfPlayer, int numOfAIPlayer) {
 		player = new ArrayList<>();
+		rank = new ArrayList<>();
 		selectionCard = new Deck();
 		this.numOfPlayer = numOfPlayer;
+		this.numOfAIPlayer = numOfAIPlayer;
 		this.motherPack = new Deck();
 		this.newMotherPack();
 		this.dealCard();
@@ -111,14 +114,18 @@ public class TienLenMienNam {
 					// selectionCard.removeDeck();
 					player.get(nowPlayer).removeCards(lastPlay);
 					if (player.get(nowPlayer).getCards().isEmpty()) {
+						rank.add((nowPlayer + 1) % (numOfAIPlayer + numOfPlayer));
 						player.get(nowPlayer).setPlayerState(PlayerState.HET_BAI);
+						newRound();
 					}
 				}
 				nextPlayer();
+				if (rank.size() == numOfAIPlayer + numOfPlayer - 1) {
+					rank.add((nowPlayer + 1) % (numOfAIPlayer + numOfPlayer));
+					player.get(nowPlayer).setPlayerState(PlayerState.HET_BAI);
+				}
 			}
 		} else {
-			// in ra người chiến thắng....
-			resetGame();
 			return;
 		}
 	}
@@ -159,8 +166,12 @@ public class TienLenMienNam {
 	}
 
 	public void nextPlayer() {
+		int temp = nowPlayer;
 		do {
-			nowPlayer = (nowPlayer + 1) % numOfPlayer;
+			nowPlayer = (nowPlayer + 1) % (numOfAIPlayer + numOfPlayer);
+			if (nowPlayer == temp) {
+				break;
+			}
 		} while (player.get(nowPlayer).getPlayerState() != PlayerState.TRONG_VONG);
 	}
 
@@ -168,11 +179,10 @@ public class TienLenMienNam {
 		selectionCard.sortDeck();// đã thêm
 		PlayType selectionCardType = checkTypePlay(selectionCard);
 		PlayType lastPlayType = checkTypePlay(lastPlay);
-//		//nếu 
-//		if (lastPlay.getCards() == null) {
-//			return true;
-//		}
-
+		if (player.get(nowPlayer).getPlayerState() == PlayerState.HET_BAI) {
+			nextPlayer();
+			return false;
+		}
 		if (key == 1 && player.get(nowPlayer).getCard(0).equals(minCard) && !selectionCard.getCard(0).equals(minCard)) {
 			return false;
 		} // đã thêm
@@ -224,13 +234,8 @@ public class TienLenMienNam {
 	}
 
 	public boolean isTheEnd() {
-		int activePlayers = 0;
-		for (Player playerTemp : player) {
-			if (playerTemp.getPlayerState() == PlayerState.TRONG_VONG) {
-				activePlayers++;
-			}
-		}
-		return activePlayers <= 1;
+		System.out.println("Rank size: " + rank.size()); // In ra kích thước của rank
+		return rank.size() == numOfPlayer + numOfAIPlayer; // Kiểm tra đầy đủ số lượng người chơi
 	}
 
 	// In thông tin người chơi
@@ -314,7 +319,17 @@ public class TienLenMienNam {
 	public void resetGame() {
 		selectionCard.removeDeck();
 		lastPlay.removeDeck();
-		newMotherPack();
+		for (int i = 0; i < numOfPlayer + numOfAIPlayer; i++) {
+			player.get(i).getCards().clear();
+			player.get(i).setPlayerState(PlayerState.TRONG_VONG);
+		}
+		this.newMotherPack();
+		this.dealCard();
+		this.informationPlayer();
+		this.round = 0;
+		this.nowPlayer = 0;
+		this.newGame();
+		this.rank.clear();
 	}
 
 	public Player getNowPlayer() {

@@ -1,6 +1,7 @@
 package application;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -12,12 +13,16 @@ import model.Card;
 import model.TienLenMienNam;
 
 public class Main extends Application {
-	private TienLenMienNam tienLenMienNam = new TienLenMienNam(3);
+	private TienLenMienNam tienLenMienNam = new TienLenMienNam(3, 0);
 
 	@Override
 	public void start(Stage primaryStage) {
+
 		VBox root = new VBox(10);
 		root.setStyle("-fx-padding: 25;");
+		Scene scene = new Scene(root, 805, 500);
+		primaryStage.setScene(scene);
+		primaryStage.setTitle("Tiến Lên Miền Nam");
 		Label statusLabel1 = new Label("Chọn bài để chơi");
 		Label statusLabel2 = new Label("Trên bàn đang có");
 		Label playerLabel = new Label();
@@ -38,14 +43,20 @@ public class Main extends Application {
 			if (tienLenMienNam.getNowPlayer() != null && tienLenMienNam.getNowPlayer().getCards() != null) {
 				for (Card card : tienLenMienNam.getNowPlayer().getCards()) {
 					Button cardButton = new Button(card.toString());
-					cardButton.setStyle("-fx-padding: 10; -fx-background-color: lightgray;");
+					cardButton.setStyle("-fx-padding: 13; -fx-background-color: lightblue;");
+//					cardButton.setOnMouseEntered(
+//							e -> cardButton.setStyle("-fx-padding: 15; -fx-background-color: pink;"));
+//					cardButton.setOnMouseExited(
+//							e -> cardButton.setStyle("-fx-padding: 15; -fx-background-color: lightblue;"));
+
 					cardButton.setOnAction(e -> {
 						if (tienLenMienNam.getSelectionCard().getCards().contains(card)) {
 							tienLenMienNam.deselectCard(card);
-							cardButton.setStyle("-fx-background-color: lightgray;");
+							cardButton.setStyle("-fx-padding: 13; -fx-background-color: lightblue;");
+
 						} else {
 							tienLenMienNam.setSelectionCard(card);
-							cardButton.setStyle("-fx-background-color: lightgreen;");
+							cardButton.setStyle("-fx-padding: 10; -fx-background-color: lightgreen;");
 						}
 					});
 					cardPane.getChildren().add(cardButton);
@@ -56,13 +67,68 @@ public class Main extends Application {
 		};
 
 		updateCardPane.run();
-
+//		Runnable showRank = () -> {
+//			StringBuilder rankMessage = new StringBuilder("Thứ tự người chiến thắng:\n");
+//
+//			// tienLenMienNam.rank trả về danh sách các người chơi theo thứ tự
+//			// chiến thắng
+//			for (int i = 0; i < tienLenMienNam.numOfAIPlayer + tienLenMienNam.numOfPlayer; i++) {
+////				rankMessage.append("Hạng ").append(i + 1).append(": Người chơi ").append(tienLenMienNam.rank.get(i) + 1)
+////						.append("\n");
+//				System.out.println(tienLenMienNam.rank.get(i));
+//			}
+//			System.out.println("Hello");
+//			// Tạo Alert để hiển thị người chiến thắng
+//			Alert winnerAlert = new Alert(Alert.AlertType.INFORMATION);
+//			winnerAlert.setTitle("Kết thúc trò chơi");
+//			winnerAlert.setHeaderText("Người chiến thắng");
+//			winnerAlert.setContentText(rankMessage.toString());
+//			winnerAlert.showAndWait();
+//		};
 		Button playButton = new Button("Hit");
 		playButton.setOnAction(e -> {
 			if (tienLenMienNam.isHit()) {
 				tienLenMienNam.playGame(); // Đánh bài
 				statusLabel1.setText("Đánh bài ");
-				// Hiển thị text của các lá bài
+
+				if (tienLenMienNam.isTheEnd()) {
+					// Khi kết thúc trò chơi, chuyển sang Scene mới chứa nút Restart
+					VBox endGameLayout = new VBox(20);
+					endGameLayout.setStyle("-fx-padding: 25;");
+					endGameLayout.setAlignment(Pos.CENTER);
+					String temp = new String("Thứ tự xếp hạng chiến thắng: ");
+					for (int i = 0; i < tienLenMienNam.numOfPlayer + tienLenMienNam.numOfAIPlayer; i++) {
+						temp += ((tienLenMienNam.rank.get(i) + 1)) + ", ";
+					}
+					Label winnerLabel = new Label(temp);
+					winnerLabel.setFont(Font.font("Arial", 20));
+					Label endGameLabel = new Label("Trò chơi kết thúc!");
+					endGameLabel.setFont(Font.font("Arial", 30));
+					Button restartButton = new Button("Restart");
+
+					restartButton.setOnAction(restartEvent -> {
+						// Gọi phương thức resetGame() của bạn để khởi động lại trò chơi
+						tienLenMienNam.resetGame(); // Khởi động lại trò chơi
+						statusLabel1.setText("Trò chơi đã được khởi động lại!");
+						statusLabel2.setText("Trên bàn đang có");
+
+						// Tạo lại giao diện trò chơi chính
+						updateCardPane.run(); // Cập nhật lại giao diện bài và thông tin người chơi
+
+						// Chuyển lại Scene về trạng thái ban đầu (Scene chứa bài)
+						primaryStage.setScene(scene);
+					});
+
+					// Thêm Label và nút Restart vào layout của Scene mới
+					endGameLayout.getChildren().addAll(winnerLabel, endGameLabel, restartButton);
+
+					// Tạo Scene mới cho phần kết thúc trò chơi và gán nó vào primaryStage
+					Scene endGameScene = new Scene(endGameLayout, 500, 300); // Cỡ Scene có thể tùy chỉnh
+
+					primaryStage.setScene(endGameScene); // Chuyển sang Scene mới
+				}
+
+				// Hiển thị text của các lá bài đã chọn
 				StringBuilder selectedCardsText = new StringBuilder();
 				for (Card card : tienLenMienNam.getSelectionCard().getCards()) {
 					selectedCardsText.append(card.toString()).append(", ");
@@ -91,9 +157,6 @@ public class Main extends Application {
 
 		root.getChildren().addAll(playerLabel, cardPane, playButton, skipButton, statusLabel1, statusLabel2);
 
-		Scene scene = new Scene(root, 805, 500);
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("Tiến Lên Miền Nam");
 		primaryStage.show();
 	}
 
