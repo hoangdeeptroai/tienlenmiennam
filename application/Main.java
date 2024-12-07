@@ -13,7 +13,7 @@ import model.Card;
 import model.TienLenMienNam;
 
 public class Main extends Application {
-	private TienLenMienNam tienLenMienNam = new TienLenMienNam(3, 0);
+	private TienLenMienNam tienLenMienNam = new TienLenMienNam(4, 0);
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -43,16 +43,11 @@ public class Main extends Application {
 			if (tienLenMienNam.getNowPlayer() != null && tienLenMienNam.getNowPlayer().getCards() != null) {
 				for (Card card : tienLenMienNam.getNowPlayer().getCards()) {
 					Button cardButton = new Button(card.toString());
-					cardButton.setStyle("-fx-padding: 13; -fx-background-color: lightblue;");
-//					cardButton.setOnMouseEntered(
-//							e -> cardButton.setStyle("-fx-padding: 15; -fx-background-color: pink;"));
-//					cardButton.setOnMouseExited(
-//							e -> cardButton.setStyle("-fx-padding: 15; -fx-background-color: lightblue;"));
-
+					cardButton.setStyle("-fx-padding: 13; -fx-background-color: pink;");
 					cardButton.setOnAction(e -> {
 						if (tienLenMienNam.getSelectionCard().getCards().contains(card)) {
 							tienLenMienNam.deselectCard(card);
-							cardButton.setStyle("-fx-padding: 13; -fx-background-color: lightblue;");
+							cardButton.setStyle("-fx-padding: 13; -fx-background-color: pink;");
 
 						} else {
 							tienLenMienNam.setSelectionCard(card);
@@ -79,7 +74,7 @@ public class Main extends Application {
 					endGameLayout.setStyle("-fx-padding: 25;");
 					endGameLayout.setAlignment(Pos.CENTER);
 					String temp = new String("Thứ tự xếp hạng chiến thắng: ");
-					tienLenMienNam.rankToString();
+					temp += tienLenMienNam.rankToString();
 					Label winnerLabel = new Label(temp);
 					winnerLabel.setFont(Font.font("Arial", 20));
 					Label endGameLabel = new Label("Trò chơi kết thúc!");

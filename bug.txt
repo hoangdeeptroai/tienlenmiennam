@@ -24,6 +24,6 @@
 	-lỗi skip -> đã fix
 	-lỗi ăn xái -> đã fix
 
-13, lỗi rank->
+13, lỗi rank-> đã fix
 
 14, thêm nút cancel -> đã thêm

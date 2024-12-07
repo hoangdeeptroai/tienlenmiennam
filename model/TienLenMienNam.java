@@ -110,13 +110,12 @@ public class TienLenMienNam {
 		if (!isTheEnd()) {
 			if (player.get(nowPlayer).getPlayerState() == PlayerState.TRONG_VONG) {
 				selectionCard.sortDeck();
-				System.out.println("Key = " + key);
 				if (isHit()) {
 					lastPlay = selectionCard.clone();
 					// selectionCard.removeDeck();
 					player.get(nowPlayer).removeCards(lastPlay);
 					if (player.get(nowPlayer).getCards().isEmpty()) {
-						rank.add((nowPlayer + 1) % (numOfAIPlayer + numOfPlayer));
+						rank.add((nowPlayer + 1));
 						player.get(nowPlayer).setPlayerState(PlayerState.HET_BAI);
 						key--;
 						// đưa trạng thái những người chưa hết bài về trong vòng
@@ -130,7 +129,7 @@ public class TienLenMienNam {
 				}
 				nextPlayer();
 				if (rank.size() == numOfAIPlayer + numOfPlayer - 1) {
-					rank.add((nowPlayer + 1) % (numOfAIPlayer + numOfPlayer));
+					rank.add((nowPlayer + 1));
 					player.get(nowPlayer).setPlayerState(PlayerState.HET_BAI);
 				}
 			}
@@ -155,12 +154,10 @@ public class TienLenMienNam {
 		// nếu bài trên bàn là rỗng thì không thể skip
 		if (lastPlay.getCards().isEmpty()) {
 			selectionCard.removeDeck();// dùng để fix bug 6
-			System.out.println("lỗi ở đây!");
 			return false;
 		}
 		if (key < 0 && activePlayers == 2) {
 			player.get(nowPlayer).setPlayerState(PlayerState.BO_LUOT);
-			System.out.println("HELOOOOOOOOOOOOOO");
 			nextPlayer();
 			// newRound();// lỗi ở đâyyy
 			selectionCard.removeDeck();
@@ -361,12 +358,13 @@ public class TienLenMienNam {
 		this.round = 0;
 		this.nowPlayer = 0;
 		this.newGame();
+		nowPlayer = rank.get(0) - 1;
 		this.rank.clear();
 	}
 
 	public String rankToString() {
 		String temp = new String();
-		for (int i = 0; i < numOfPlayer + numOfAIPlayer; i++) {
+		for (int i = 0; i < rank.size(); i++) {
 			temp += rank.get(i) + " ";
 		}
 		return temp;
