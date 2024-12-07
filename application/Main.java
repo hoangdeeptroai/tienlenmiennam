@@ -24,7 +24,7 @@ public class Main extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Tiến Lên Miền Nam");
 		Label statusLabel1 = new Label("Chọn bài để chơi");
-		Label statusLabel2 = new Label("Trên bàn đang có");
+		Label statusLabel2 = new Label("Trên bàn chưa có gì!");
 		Label playerLabel = new Label();
 
 		FlowPane cardPane = new FlowPane(); // Dùng để hiển thị các nút
@@ -67,24 +67,6 @@ public class Main extends Application {
 		};
 
 		updateCardPane.run();
-//		Runnable showRank = () -> {
-//			StringBuilder rankMessage = new StringBuilder("Thứ tự người chiến thắng:\n");
-//
-//			// tienLenMienNam.rank trả về danh sách các người chơi theo thứ tự
-//			// chiến thắng
-//			for (int i = 0; i < tienLenMienNam.numOfAIPlayer + tienLenMienNam.numOfPlayer; i++) {
-////				rankMessage.append("Hạng ").append(i + 1).append(": Người chơi ").append(tienLenMienNam.rank.get(i) + 1)
-////						.append("\n");
-//				System.out.println(tienLenMienNam.rank.get(i));
-//			}
-//			System.out.println("Hello");
-//			// Tạo Alert để hiển thị người chiến thắng
-//			Alert winnerAlert = new Alert(Alert.AlertType.INFORMATION);
-//			winnerAlert.setTitle("Kết thúc trò chơi");
-//			winnerAlert.setHeaderText("Người chiến thắng");
-//			winnerAlert.setContentText(rankMessage.toString());
-//			winnerAlert.showAndWait();
-//		};
 		Button playButton = new Button("Hit");
 		playButton.setOnAction(e -> {
 			if (tienLenMienNam.isHit()) {
@@ -97,9 +79,7 @@ public class Main extends Application {
 					endGameLayout.setStyle("-fx-padding: 25;");
 					endGameLayout.setAlignment(Pos.CENTER);
 					String temp = new String("Thứ tự xếp hạng chiến thắng: ");
-					for (int i = 0; i < tienLenMienNam.numOfPlayer + tienLenMienNam.numOfAIPlayer; i++) {
-						temp += ((tienLenMienNam.rank.get(i) + 1)) + ", ";
-					}
+					tienLenMienNam.rankToString();
 					Label winnerLabel = new Label(temp);
 					winnerLabel.setFont(Font.font("Arial", 20));
 					Label endGameLabel = new Label("Trò chơi kết thúc!");
@@ -109,7 +89,7 @@ public class Main extends Application {
 					restartButton.setOnAction(restartEvent -> {
 						tienLenMienNam.resetGame(); // Khởi động lại trò chơi
 						statusLabel1.setText("Trò chơi đã được khởi động lại!");
-						statusLabel2.setText("Trên bàn đang có");
+						statusLabel2.setText("Trên bàn chưa có gì!!!");
 						updateCardPane.run();
 						primaryStage.setScene(scene);
 					});
@@ -126,7 +106,8 @@ public class Main extends Application {
 				if (selectedCardsText.length() > 0) {
 					selectedCardsText.setLength(selectedCardsText.length() - 2); // Xóa dấu ", " cuối cùng
 				}
-				statusLabel2.setText("Bài trên bàn: " + selectedCardsText.toString());
+				statusLabel2.setText("Bài trên bàn:   " + selectedCardsText.toString());
+				statusLabel2.setFont(Font.font("Arial", 20));
 				tienLenMienNam.getSelectionCard().removeDeck();
 				updateCardPane.run(); // Cập nhật giao diện bài
 			} else {
@@ -145,7 +126,19 @@ public class Main extends Application {
 			updateCardPane.run();
 		});
 
-		root.getChildren().addAll(playerLabel, cardPane, playButton, skipButton, statusLabel1, statusLabel2);
+		Button cancelButton = new Button("Cancel");
+		cancelButton.setOnAction(e -> {
+			if (tienLenMienNam.getSelectionCard().getCards().isEmpty()) {
+				statusLabel1.setText("Hãy chọn bài của bạn!");
+			} else {
+				tienLenMienNam.cancel();
+				statusLabel1.setText("Đã bỏ chọn");
+			}
+			updateCardPane.run();
+		});
+
+		root.getChildren().addAll(playerLabel, cardPane, playButton, skipButton, cancelButton, statusLabel1,
+				statusLabel2);
 
 		primaryStage.show();
 	}

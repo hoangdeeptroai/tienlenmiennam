@@ -19,3 +19,11 @@
 10,lỗi sảnh 6/8/10 lá-> đã fix
 
 11, đã thêm phần end, restart, rank;
+
+12, thêm  chức năng ăn xái khi 1 người hết bài=>sinh ra lắm bug vllll
+	-lỗi skip -> đã fix
+	-lỗi ăn xái -> đã fix
+
+13, lỗi rank->
+
+14, thêm nút cancel -> đã thêm

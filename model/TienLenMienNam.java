@@ -28,8 +28,8 @@ public class TienLenMienNam {
 	private int round;
 	private int nowPlayer;
 	private Card minCard = new Card();// đã thêm-là lá bài bé nhất, 4 players -> là 3 bích
-	private int key = 1;// đã thêm-biến key thể hiện được ván bài đầu tiên, điều này giúp cho logic của
-						// lần đánh đầu tiên hoạt động tốt hơn...
+	private int key;// đã thêm-biến key thể hiện được ván bài đầu tiên, điều này giúp cho logic của
+					// lần đánh đầu tiên hoạt động tốt hơn...
 	public List<Integer> rank;// thêm danh sách chiến thắng
 
 	// constructer
@@ -38,6 +38,7 @@ public class TienLenMienNam {
 		player = new ArrayList<>();
 		rank = new ArrayList<>();
 		selectionCard = new Deck();
+		key = 1;
 		this.numOfPlayer = numOfPlayer;
 		this.numOfAIPlayer = numOfAIPlayer;
 		this.motherPack = new Deck();
@@ -109,6 +110,7 @@ public class TienLenMienNam {
 		if (!isTheEnd()) {
 			if (player.get(nowPlayer).getPlayerState() == PlayerState.TRONG_VONG) {
 				selectionCard.sortDeck();
+				System.out.println("Key = " + key);
 				if (isHit()) {
 					lastPlay = selectionCard.clone();
 					// selectionCard.removeDeck();
@@ -116,7 +118,14 @@ public class TienLenMienNam {
 					if (player.get(nowPlayer).getCards().isEmpty()) {
 						rank.add((nowPlayer + 1) % (numOfAIPlayer + numOfPlayer));
 						player.get(nowPlayer).setPlayerState(PlayerState.HET_BAI);
-						newRound();
+						key--;
+						// đưa trạng thái những người chưa hết bài về trong vòng
+						// để chọn người có thể chặn được và ăn xái
+						for (int i = 0; i < numOfPlayer + numOfAIPlayer; i++) {
+							if (player.get(i).getPlayerState() == PlayerState.BO_LUOT) {
+								player.get(i).setPlayerState(PlayerState.TRONG_VONG);
+							}
+						}
 					}
 				}
 				nextPlayer();
@@ -146,15 +155,31 @@ public class TienLenMienNam {
 		// nếu bài trên bàn là rỗng thì không thể skip
 		if (lastPlay.getCards().isEmpty()) {
 			selectionCard.removeDeck();// dùng để fix bug 6
+			System.out.println("lỗi ở đây!");
 			return false;
 		}
-		// nếu round còn 2 người mà skip thì tạo round mà người tiếp theo sẽ mở bát
-		if (activePlayers == 2) {
+		if (key < 0 && activePlayers == 2) {
+			player.get(nowPlayer).setPlayerState(PlayerState.BO_LUOT);
+			System.out.println("HELOOOOOOOOOOOOOO");
 			nextPlayer();
-			newRound();
+			// newRound();// lỗi ở đâyyy
+			selectionCard.removeDeck();
+			key = 0;
+			return true;
+		}
+		// nếu round còn 2 người mà skip thì tạo round mà người tiếp theo sẽ mở bát
+		if (activePlayers <= 2) {
+			if (activePlayers == 1) {
+				newRound();
+				nextPlayer();
+			} else {
+				nextPlayer();
+				newRound();
+			}
 			selectionCard.removeDeck();
 			return true;
 		}
+
 		// nếu không phải vòng đầu tiên thì có thể bỏ lượt
 		if (key != 1) {
 			player.get(nowPlayer).setPlayerState(PlayerState.BO_LUOT);
@@ -199,31 +224,39 @@ public class TienLenMienNam {
 			} else if (selectionCardType == lastPlayType) {
 				if (selectionCardType == PlayType.SANH) {
 					if (a == b && selectionCard.getCard(a).compareCard(lastPlay.getCard(b))) {
+						key = 0;
 						return true;
 					}
 				} else if (selectionCardType == PlayType.DOI_THONG) {
 					if (a > b) {
+						key = 0;
 						return true;
 					} else if (a == b && selectionCard.getCard(a).compareCard(lastPlay.getCard(b))) {
+						key = 0;
 						return true;
 					} else {
 						return false;
 					}
 				} else if (selectionCard.getCard(a).compareCard(lastPlay.getCard(b))) {
+					key = 0;
 					return true;
 				}
 			} else {
 				if (selectionCardType == PlayType.TU && lastPlayType == PlayType.DOI_THONG && b + 1 == 6) {
+					key = 0;
 					return true;
 				} else if (lastPlayType == PlayType.TU && selectionCardType == PlayType.DOI_THONG && b + 1 >= 8) {
+					key = 0;
 					return true;
 				} else if (lastPlay.getCard(b).getValueValue() == 15) {
 					if (b == 0) {
 						if (selectionCardType == PlayType.TU || selectionCardType == PlayType.DOI_THONG) {
+							key = 0;
 							return true;
 						}
 					} else if (b == 1) {
 						if (selectionCardType == PlayType.TU || (selectionCardType == PlayType.DOI_THONG && a > 6)) {
+							key = 0;
 							return true;
 						}
 					}
@@ -234,7 +267,6 @@ public class TienLenMienNam {
 	}
 
 	public boolean isTheEnd() {
-		System.out.println("Rank size: " + rank.size()); // In ra kích thước của rank
 		return rank.size() == numOfPlayer + numOfAIPlayer; // Kiểm tra đầy đủ số lượng người chơi
 	}
 
@@ -330,6 +362,18 @@ public class TienLenMienNam {
 		this.nowPlayer = 0;
 		this.newGame();
 		this.rank.clear();
+	}
+
+	public String rankToString() {
+		String temp = new String();
+		for (int i = 0; i < numOfPlayer + numOfAIPlayer; i++) {
+			temp += rank.get(i) + " ";
+		}
+		return temp;
+	}
+
+	public void cancel() {
+		selectionCard.removeDeck();
 	}
 
 	public Player getNowPlayer() {

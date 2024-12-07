@@ -20,7 +20,6 @@ public class Player extends Deck {
 	// Các thuộc tính của người chơi như Trạng thái, tên, STT, và số dư
 	private PlayerState playerState;
 	private String playerName;
-	private double playerBallance;
 	private int playerNum;
 
 	// constructer
@@ -31,7 +30,6 @@ public class Player extends Deck {
 	public Player(String playerName, double playerBallance, int playerNum) {
 		this.playerState = PlayerState.TRONG_VONG;
 		this.playerName = playerName;
-		this.playerBallance = playerBallance;
 		this.playerNum = playerNum;
 	}
 
@@ -58,10 +56,6 @@ public class Player extends Deck {
 	// Phương thức trả về tên người chơi
 	public String getPlayerName() {
 		return playerName;
-	}
-
-	public double getPlayerBallance() {
-		return playerBallance;
 	}
 
 	public int getPlayerNum() {
